@@ -69,7 +69,7 @@ Paste this into your Orchestrator LLM:
 3. **You → Coding LLM:** Paste the handoff prompt
 4. **Coding LLM → You:** Implements + gives audit prompt
 5. **You → Orchestrator:** Paste the audit prompt
-6. **Orchestrator → You:** Performs code review. If issues exist, gives follow-up prompt. If passed, updates docs and asks "What next?"
+6. **Orchestrator -> You:** Performs code review. If issues exist, gives follow-up prompt. If repeated issues emerge, updates `LLM/docs/RULES.md`. If passed, updates docs and asks "What next?"
 
 ---
 
@@ -79,16 +79,17 @@ Paste this into your Orchestrator LLM:
 your-project/
 ├── LLM/                              ← AI workflow folder
 │   ├── ORCHESTRATOR_BOOTSTRAP.md      ← Project overview for the Orchestrator
-│   ├── orchestrator_notes.md          ← Running log of all changes (auto-maintained)
+│   ├── orchestrator_notes.md          ← Running log of all changes
 │   ├── CURRENT_TASKS.md               ← Active/completed task tracker
-│   ├── HANDOFF_{FEATURE}.md           ← Generated per feature (coding instructions)
+│   ├── HANDOFF_{FEATURE}.md           ← Coding instructions (The "Skill" prompt)
 │   ├── context/                       ← Feature design docs
 │   │   └── {feature}.md               ← Requirements, data schemas, command flows
 │   ├── completions/                   ← Coding LLM completion reports
-│   │   └── {feature}.md               ← What was changed, verification results
+│   │   └── {feature}.md               ← Pass/fail, commands run, files explored
 │   └── docs/                          ← Living documentation
 │       ├── COMMANDS.md                ← All user-facing commands/APIs
-│       └── API_REFERENCE.md           ← Internal function signatures & schemas
+│       ├── API_REFERENCE.md           ← Internal function signatures & schemas
+│       └── RULES.md                   ← Persistent invariants & bounds
 ├── ... (your project files)
 ```
 
@@ -96,10 +97,9 @@ your-project/
 
 ## Key Principles
 
-1. **Orchestrator never writes production code** — it plans, designs, audits, and documents
-2. **Coding LLM never reads unnecessary files** — handoffs list exactly which files to read
-3. **Every handoff is self-contained** — the coding LLM should be able to implement without asking questions
-4. **Every implementation is audited** — the orchestrator verifies against the spec before closing out
-5. **Documentation stays current** — updated after every audit, not as an afterthought
-6. **The handoff includes verification steps** — so the coding LLM proves its work
-7. **The handoff includes completion report format** — standardized output for audit
+1. **Large, generic global context is often harmful** — The Coding LLM receives a highly-focused procedural handoff (a "Skill"), not a giant repo summary.
+2. **Failure Memory, not Architecture Memory** — Global context is restricted to a tiny `RULES.md` file that only tracks persistent failures and non-negotiable conventions.
+3. **Controlled Agent Exploration** — The Coding LLM is told exactly where to start reading. If it gets blocked, it is allowed to perform targeted searches, but must stop and ask for clarification if the scope expands too far.
+4. **Procedural Guidance Over Declarative Goals** — Handoffs provide step-by-step approaches and exact acceptance checks instead of just saying "build this feature."
+5. **Measurable Completion Reports** — Every coding task ends with an evidence-driven report containing pass/fail metrics, exact commands run, extra files explored, and performance tracking if available.
+6. **Every handoff is audited** — The Orchestrator verifies against the spec before closing out, measuring task success metrics to prove value.

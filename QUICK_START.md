@@ -11,6 +11,8 @@ Open `LLM/ORCHESTRATOR_BOOTSTRAP.md` and fill in:
 - **Module system** — e.g., "PSR-4 autoload"
 - **Current Features** table — list what already exists
 
+*(Note: The `LLM/docs/RULES.md` file is included in this template. The Orchestrator will automatically append to it if you run into repeated errors. You do not need to write it now).*
+
 ## Step 3: Bootstrap the Orchestrator
 Paste this into your Orchestrator LLM (first conversation):
 
@@ -56,8 +58,8 @@ If passed: updates docs & asks "What next?"
 | Go | `go build ./...` | `go test ./...` |
 
 ### Handoff rules of thumb:
-- **List exactly which files to read** — never say "read the whole project"
-- **List exactly which files to modify** — never say "modify as needed"
-- **Include example output** — so the Coding LLM knows what "done" looks like
-- **Include verification commands** — so they can prove their work
-- **Include the completion report format** — so output is always consistent
+- **Keep it tight** — Handoffs should be highly focused. Avoid big architecture summaries.
+- **Provide Procedural Guidance** — Don't just declare what you want; provide step-by-step instructions and edge cases.
+- **List exactly where to start reading** — but allow targeted exploration (e.g., "Start here. Explore only what's necessary; if blocked, pause and ask").
+- **Include verification commands** — so they can prove their work.
+- **Enforce structured completion reports** — pass/fail, commands run, extra files explored.
