@@ -106,6 +106,12 @@ your-project/
 
 ---
 
+## See Also
+
+- **[DevChain](https://github.com/twitech-lab/devchain)** — A more advanced multi-agent development framework with structured task pipelines. If you need something beyond a lightweight template, worth checking out.
+
+---
+
 ## Changelog
 
 ### v2 (2026-02-23)
