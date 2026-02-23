@@ -103,3 +103,24 @@ your-project/
 4. **Procedural Guidance Over Declarative Goals** — Handoffs provide step-by-step approaches and exact acceptance checks instead of just saying "build this feature."
 5. **Measurable Completion Reports** — Every coding task ends with an evidence-driven report containing pass/fail metrics, exact commands run, extra files explored, and performance tracking if available.
 6. **Every handoff is audited** — The Orchestrator verifies against the spec before closing out, measuring task success metrics to prove value.
+
+---
+
+## Changelog
+
+### v2 (2026-02-23)
+
+Design informed by two research papers:
+- *Evaluating AGENTS.md* (arXiv:2602.11988) — large generic context files reduce task success and increase cost; minimal human-written context helps.
+- *SkillsBench* (arXiv:2602.12670) — curated procedural Skills improve pass rates +16pp; focused 2–3 module Skills outperform comprehensive documentation.
+
+Changes:
+- **Deduplicated sources of truth.** `ORCHESTRATOR_PROMPT.md` now defers to `LLM/ORCHESTRATOR_BOOTSTRAP.md` for workflow and `LLM/HANDOFF_TEMPLATE.md` for handoff format. No more duplicated blocks to drift.
+- **Added `LLM/docs/RULES.md`** — tiny failure-memory file. Rules added only when the Coding LLM repeats errors; pruned periodically.
+- **Improved handoff template.** Replaced rigid "Do NOT read other files" with controlled exploration + required logging. Added "Deviations from Handoff" to completion reports.
+- **Emphasized procedural guidance** in handoffs — step-by-step instructions over declarative goals.
+- **Cleaned README** — removed promotional framing, kept factual principles.
+
+### v1 (Initial)
+
+- Original two-LLM workflow template with role separation, handoff/completion/audit cycle, and living documentation.
