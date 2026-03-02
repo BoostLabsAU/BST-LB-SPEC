@@ -1,7 +1,7 @@
 # Quick Start — Drop This Into Any Project
 
 ## Step 0: Pick your LLMs
-You need two models — an Orchestrator and a Coder. See [evals/LLM_RECOMMENDATIONS.md](evals/LLM_RECOMMENDATIONS.md) for our tested pairs, or use the main recommendation: **GPT-5.2** (Orchestrator) + **Codex 5.3** (Coder).
+You need two models — an Orchestrator and a Coder. See [evals/LLM_RECOMMENDATIONS.md](evals/LLM_RECOMMENDATIONS.md) for our tested pairs, or use the main recommendation: **GPT-5.2** (Orchestrator) + **Codex 5.3** (Coder). Opus 4.6 is also a strong Orchestrator swap-in (especially for Laravel-heavy repos).
 
 ## Step 1: Copy the LLM folder
 Copy the entire `LLM/` folder from this template into your project root.

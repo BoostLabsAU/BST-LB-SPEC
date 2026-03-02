@@ -67,6 +67,8 @@ We tested 20+ models across 3 waves of cross-audit benchmarks (~16,000 data poin
 
 *Note: “Cheapest (self-host / open weights)” reflects our benchmark runs; pricing changes over time and varies by provider.*
 
+**GPT-5.2 vs Opus 4.6:** Both are strong Orchestrators. Default to **GPT-5.2** for general use; swap in **Opus 4.6** when the repo is Laravel-heavy or you want extra “audit sharpness” on tricky bugs.
+
 Full rationale and methodology: [LLM Recommendations](evals/LLM_RECOMMENDATIONS.md) *(detailed internal analysis is archived in `testing-internal/`)*.
 
 ---
@@ -170,7 +172,7 @@ It writes `evals/skills_log.csv` (gitignored). Open it in Sheets/Excel and filte
 ### v3 (2026-03-02)
 
 - **Added LLM pair recommendations.** Ran a 3-wave cross-audit benchmark (Node.js, Laravel, Rails) with 20+ models. Summary published in `evals/LLM_RECOMMENDATIONS.md` (detailed internal analysis archived in `testing-internal/`).
-- **Recommended default pair:** Sonnet 4.6 (Orchestrator) + Codex 5.3 (Coder).
+- **Main recommendation:** GPT-5.2 (Orchestrator) + Codex 5.3 (Coder).
 - **Added "Which LLMs Should I Use?" section to README** with a quick-reference table.
 - **Cleaned project structure** — internal testing data moved to `testing-internal/` and excluded from git.
 
