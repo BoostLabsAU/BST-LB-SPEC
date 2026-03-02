@@ -1,5 +1,8 @@
 # Quick Start — Drop This Into Any Project
 
+## Step 0: Pick your LLMs
+You need two models — an Orchestrator and a Coder. See [evals/LLM_RECOMMENDATIONS.md](evals/LLM_RECOMMENDATIONS.md) for our tested pairs, or use the main recommendation: **GPT-5.2** (Orchestrator) + **Codex 5.3** (Coder).
+
 ## Step 1: Copy the LLM folder
 Copy the entire `LLM/` folder from this template into your project root.
 
@@ -63,3 +66,9 @@ If passed: updates docs & asks "What next?"
 - **List exactly where to start reading** — but allow targeted exploration (e.g., "Start here. Explore only what's necessary; if blocked, pause and ask").
 - **Include verification commands** — so they can prove their work.
 - **Enforce structured completion reports** — pass/fail, commands run, extra files explored.
+
+### Skills (emerge over time):
+- The `LLM/skills/` folder starts empty — don't pre-create skills
+- The Orchestrator will extract common patterns into skills after seeing them 3+ times
+- Skills keep handoffs DRY without adding global context overhead
+- Use skills selectively — prefer 0–3 relevant skills per handoff; skip them for routine tasks.

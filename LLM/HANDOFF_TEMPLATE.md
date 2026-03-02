@@ -9,6 +9,8 @@ You are adding/modifying [feature description] in the **[Project Name]** (`[proj
 1. `path/to/file1` — [why they need to read it]
 2. `path/to/file2` — [why they need to read it]
 
+> **Note to Orchestrator:** If applicable Skills exist in `LLM/skills/`, add up to **3** of the most relevant ones after item 2. If no skill applies (or this is a routine task), delete this note.
+
 Start with the listed files; you may explore others if needed, but log every extra file and why in your completion report, and STOP to ask the user if the task scope expands. Do NOT modify files not listed in "Changes Required" below.
 
 ## Changes Required
@@ -29,8 +31,10 @@ Start with the listed files; you may explore others if needed, but log every ext
 - [Files NOT to touch]
 - [Dependencies NOT to add]
 - [Backward compatibility requirements]
+- Do NOT edit `LLM/docs/RULES.md` or `LLM/skills/*.md` unless the handoff explicitly asks for it.
 
 ## Verification
+Keep verification focused (1–3 commands) unless the handoff explicitly requires broader testing.
 1. [Syntax check command] — no errors
 2. [Feature test 1] — expected result
 3. [Feature test 2] — expected result
@@ -41,6 +45,7 @@ Create `LLM/completions/[feature-name].md` containing:
 - **Pass/Fail Status:** Did it pass all verification checks?
 - **Verification Commands Run:** Exact commands you executed.
 - **Extra Files Explored:** List any files you had to search outside the "Read These First" list and why.
+- **Skills Used (if any):** List any `LLM/skills/*.md` you read and whether each was helpful or confusing.
 - **What Was Changed:** Files modified and brief summaries.
 - **Deviations from Handoff:** List anything you implemented differently from the spec and why. Write "None" if you followed the spec exactly.
 - **Metrics:** (Optional) Time taken or Token/Cost usage, if available in your interface.

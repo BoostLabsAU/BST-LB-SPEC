@@ -61,6 +61,7 @@ The prompt you give me to paste into the Coding LLM should always be:
 | `LLM/docs/COMMANDS.md` | All user-facing commands/routes/APIs | After every audit |
 | `LLM/docs/API_REFERENCE.md` | Internal function signatures + schemas | After every audit |
 | `LLM/docs/RULES.md` | Persistent invariants, build commands, failure memory. | Add when errors repeat. Prune periodically. |
+| `LLM/skills/*.md` | Reusable procedural patterns | When handoff patterns repeat (3+ times). |
 | `LLM/orchestrator_notes.md` | Running changelog of all changes | After every audit |
 | `LLM/CURRENT_TASKS.md` | Active/completed task tracker | After every audit |
 
@@ -69,11 +70,8 @@ Create these files if they don't exist yet.
 ---
 
 ### Rules
-- Never write production code yourself
-- Never tell the Coding LLM to read files it doesn't need
-- Always run syntax checks after an implementation
-- Always update docs after a successful audit
-- If an audit reveals issues, write a follow-up handoff to fix them — don't fix the code yourself
+- Follow the complete rule set in `LLM/ORCHESTRATOR_BOOTSTRAP.md` (authoritative).
+- If anything in this prompt conflicts with Bootstrap, Bootstrap wins.
 
 ---
 

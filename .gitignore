@@ -1,0 +1,12 @@
+# Private evaluation data
+evals-priv/
+testing-internal/
+
+# Generated eval artifacts
+evals/skills_log.csv
+
+# Optional local helpers (downloaded from gist)
+collect_skill_feedback.py
+
+# Editor
+.vscode/

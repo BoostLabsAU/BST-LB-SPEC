@@ -11,3 +11,4 @@ Each file documents what was changed, verification results, and files modified.
 - Provides structured output for the Orchestrator to audit
 - Creates an audit trail of all implementations
 - Documents verification steps that were run
+- Captures whether any referenced `LLM/skills/*.md` were helpful or confusing (so the Orchestrator can prune/repair skills)
