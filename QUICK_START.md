@@ -6,7 +6,12 @@ You need two models — an Orchestrator and a Coder. See [evals/LLM_RECOMMENDATI
 ## Step 1: Copy the LLM folder
 Copy the entire `LLM/` folder from this template into your project root.
 
-## Step 2: Fill in ORCHESTRATOR_BOOTSTRAP.md
+## Step 2 (Optional): Run the Scout Initialization prompt
+If you dropped this into a large/unfamiliar project and don’t know how to fill in the Bootstrap yet, use the Scout prompt:
+
+See `LLM/SCOUT_PROMPT.md` (it outputs `LLM/scout/baseline.md`, which you then summarize into `LLM/ORCHESTRATOR_BOOTSTRAP.md`).
+
+## Step 3: Fill in ORCHESTRATOR_BOOTSTRAP.md
 Open `LLM/ORCHESTRATOR_BOOTSTRAP.md` and fill in:
 - **Project Name** — e.g., "ClientPortal SaaS"
 - **Stack** — e.g., "PHP 8.2, Laravel 11, MySQL 8, Tailwind CSS"
@@ -16,7 +21,7 @@ Open `LLM/ORCHESTRATOR_BOOTSTRAP.md` and fill in:
 
 *(Note: The `LLM/docs/RULES.md` file is included in this template. The Orchestrator will automatically append to it if you run into repeated errors. You do not need to write it now).*
 
-## Step 3: Bootstrap the Orchestrator
+## Step 4: Bootstrap the Orchestrator
 Paste this into your Orchestrator LLM (first conversation):
 
 ```
@@ -25,13 +30,13 @@ You are the Orchestrator LLM for this project. Read the file
 existing features, and your workflow. Then ask me what I'd like to work on.
 ```
 
-## Step 4: Start building
+## Step 5: Start building
 Describe your first feature. The Orchestrator will:
 1. Ask clarifying questions
 2. Write a context doc + handoff prompt
 3. Give you the prompt for the Coding LLM
 
-## Step 5: The Loop
+## Step 6: The Loop
 ```
 You describe feature → Orchestrator writes handoff →
 You paste into Coding LLM → Coding LLM implements →

@@ -62,10 +62,11 @@ The prompt you give me to paste into the Coding LLM should always be:
 | `LLM/docs/API_REFERENCE.md` | Internal function signatures + schemas | After every audit |
 | `LLM/docs/RULES.md` | Persistent invariants, build commands, failure memory. | Add when errors repeat. Prune periodically. |
 | `LLM/skills/*.md` | Reusable procedural patterns | When handoff patterns repeat (3+ times). |
+| `LLM/scout/baseline.md` | Baseline project skeleton (optional, Orchestrator-only) | Created/updated when Scout prompt is run. Do not add to handoffs. |
 | `LLM/orchestrator_notes.md` | Running changelog of all changes | After every audit |
 | `LLM/CURRENT_TASKS.md` | Active/completed task tracker | After every audit |
 
-Create these files if they don't exist yet.
+Create these files if they don't exist yet (except `baseline.md`, which is only created by the Scout prompt).
 
 ---
 

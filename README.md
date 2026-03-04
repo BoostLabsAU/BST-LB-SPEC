@@ -79,13 +79,17 @@ Full rationale and methodology: [LLM Recommendations](evals/LLM_RECOMMENDATIONS.
 See the table above or read [evals/LLM_RECOMMENDATIONS.md](evals/LLM_RECOMMENDATIONS.md).
 
 ### 1. Copy the `LLM/` folder template into your project root
-### 2. Bootstrap the Orchestrator
+
+### 2 (Optional). Run the Baseline Scout
+If you dropped this into a large/unfamiliar project, see `LLM/SCOUT_PROMPT.md` — it produces `LLM/scout/baseline.md`, which you then summarize into `LLM/ORCHESTRATOR_BOOTSTRAP.md`.
+
+### 3. Bootstrap the Orchestrator
 
 Paste this into your Orchestrator LLM:
 
 > You are the **Orchestrator LLM** for this project. Read the file `LLM/ORCHESTRATOR_BOOTSTRAP.md` to understand the project structure, existing features, and your workflow. Then ask me what I'd like to work on.
 
-### 3. For each feature, the cycle is:
+### 4. For each feature, the cycle is:
 
 1. **You → Orchestrator:** Describe the feature
 2. **Orchestrator → You:** Asks questions, then writes handoff
@@ -102,6 +106,7 @@ Paste this into your Orchestrator LLM:
 your-project/
 ├── LLM/                              ← AI workflow folder
 │   ├── ORCHESTRATOR_BOOTSTRAP.md      ← Project overview for the Orchestrator
+│   ├── SCOUT_PROMPT.md                ← (Optional) Baseline scout initialization
 │   ├── orchestrator_notes.md          ← Running log of all changes
 │   ├── CURRENT_TASKS.md               ← Active/completed task tracker
 │   ├── HANDOFF_{FEATURE}.md           ← Coding instructions (handoff prompt)
@@ -113,6 +118,8 @@ your-project/
 │   │   ├── COMMANDS.md                ← All user-facing commands/APIs
 │   │   ├── API_REFERENCE.md           ← Internal function signatures & schemas
 │   │   └── RULES.md                   ← Persistent invariants & bounds
+│   ├── scout/                         ← Scout output (optional, Orchestrator-only)
+│   │   └── baseline.md                ← Navigation + verification anchors
 │   └── skills/                         ← Reusable procedural patterns (created over time)
 │       └── {pattern}.md                ← e.g., add-api-endpoint.md, write-unit-tests.md
 ├── ... (your project files)
@@ -161,6 +168,10 @@ It writes `evals/skills_log.csv` (gitignored). Open it in Sheets/Excel and filte
 ---
 
 ## Changelog
+
+### v3.2 (Unreleased)
+
+- **Optional Baseline Scout.** Added `LLM/SCOUT_PROMPT.md` for large/unfamiliar projects. Produces `LLM/scout/baseline.md` (Navigation + Verification anchors, hard-capped at 150–250 lines). Orchestrator-only — never added to Coding LLM handoffs.
 
 ### v3.1 (2026-03-02)
 

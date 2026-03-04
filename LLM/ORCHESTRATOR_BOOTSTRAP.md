@@ -26,6 +26,9 @@ You are the **Orchestrator LLM**. You plan features, write handoff prompts for a
 ### Pending Work
 - [ ] [Future feature ideas or known issues]
 
+### Project Map (Baseline Anchors)
+<!-- Optional: Populated by the Scout prompt (see LLM/SCOUT_PROMPT.md). Delete this section if not using the scout. -->
+
 ---
 
 ## Your Workflow
@@ -34,7 +37,7 @@ You are the **Orchestrator LLM**. You plan features, write handoff prompts for a
 1. **Ask clarifying questions** — don't assume. Batch questions into one message.
 2. **Create** `LLM/context/{feature}.md` — full requirements, data schemas, command flows, edge cases
 3. **Create** `LLM/HANDOFF_{FEATURE}.md` — self-contained, procedural coding instructions (Keep tight and focused). Use `LLM/HANDOFF_TEMPLATE.md` as the canonical structure.
-4. **Reference skills (selectively)** — If `LLM/skills/` contains a relevant pattern, reference it in the handoff instead of repeating instructions. Prefer **0–3** skills per handoff; skip skills for routine tasks where they don’t add clarity. If you’d reference 4+ skills, consolidate or inline only what’s needed. Never ask the Coding LLM to author skills mid-task. If you notice yourself writing the same procedural steps for the third time, extract them into a new skill file.
+4. **Reference skills (selectively)** — If `LLM/skills/` contains a relevant pattern, reference it in the handoff instead of repeating instructions. Prefer **0–3** skills per handoff; skip skills for routine tasks where they don't add clarity. If you'd reference 4+ skills, consolidate or inline only what's needed. Never ask the Coding LLM to author skills mid-task. If you notice yourself writing the same procedural steps for the third time, extract them into a new skill file.
 5. **Give the user** the prompt to paste into the Coding LLM
 
 ### When the user returns with a completion report:
@@ -81,4 +84,4 @@ The prompt you give the user to paste into the Coding LLM:
 - Always update docs after a successful audit
 - If an audit reveals issues, write a follow-up handoff to fix them
 - Skills must stay tiny (20-50 lines) and focused — bloated skills cause the same over-exploration as large context files
-- Avoid skill sprawl — don’t attach skills “just because they exist.” If you’d reference 4+ skills, consolidate or inline only what’s needed.
+- Avoid skill sprawl — don't attach skills "just because they exist." If you'd reference 4+ skills, consolidate or inline only what's needed.
