@@ -71,7 +71,7 @@ End your response with:
 
 > The coding LLM has finished the **[Feature Name]** implementation.
 > Read the completion report at `LLM/completions/[feature-name].md`.
-> Perform a code review on the modified files against the handoff spec at `LLM/HANDOFF_[FEATURE].md` and run syntax checks.
+> Perform a code review on the modified files against the handoff spec at `LLM/handoffs/[feature-name].md` and run syntax checks.
 > If there are deviations or issues, provide a follow-up prompt for the Coding LLM to fix them.
 > If the review passes, update the project documentation and ask me what I'd like to work on next.
 ```

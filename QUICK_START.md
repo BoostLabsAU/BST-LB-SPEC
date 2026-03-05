@@ -30,6 +30,19 @@ You are the Orchestrator LLM for this project. Read the file
 existing features, and your workflow. Then ask me what I'd like to work on.
 ```
 
+## Step 4.1 (Recommended): Add a "resume" prompt to your toolkit
+If you ever hit context limits or you need to start fresh in a new chat window, use:
+
+- `LLM/RESUME_PROMPT.md` (Orchestrator-only)
+
+## Step 4.2 (Recommended): Keep `LLM/` tidy over time
+As you work, `LLM/` will fill up with handoffs and completion reports. That's expected.
+
+Rules of thumb:
+- Write handoffs to `LLM/handoffs/{feature}.md`
+- Update handoffs in place (avoid `*_V2.md`, `*_FINAL.md`)
+- Keep `LLM/CURRENT_TASKS.md` pointing at the current handoff/context paths
+
 ## Step 5: Start building
 Describe your first feature. The Orchestrator will:
 1. Ask clarifying questions

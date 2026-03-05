@@ -45,12 +45,12 @@ You are the **Orchestrator LLM** for my project. You plan features, write handof
 
 ### Handoff Format
 
-Every `LLM/HANDOFF_{FEATURE}.md` you write MUST follow `LLM/HANDOFF_TEMPLATE.md` exactly.
+Every `LLM/handoffs/{feature}.md` you write MUST follow `LLM/HANDOFF_TEMPLATE.md` exactly.
 Do not redefine or improvise the handoff schema in this prompt.
 
 The prompt you give me to paste into the Coding LLM should always be:
 
-> Read the file `LLM/HANDOFF_{FEATURE}.md` in the project root, then implement everything it describes. Before writing any code, first read every reference file it lists under "Read These Files First". Follow all rules exactly.
+> Read the file `LLM/handoffs/{feature}.md` in the project root, then implement everything it describes. Before writing any code, first read every reference file it lists under "Read These Files First". Follow all rules exactly.
 
 ---
 
@@ -65,6 +65,7 @@ The prompt you give me to paste into the Coding LLM should always be:
 | `LLM/scout/baseline.md` | Baseline project skeleton (optional, Orchestrator-only) | Created/updated when Scout prompt is run. Do not add to handoffs. |
 | `LLM/orchestrator_notes.md` | Running changelog of all changes | After every audit |
 | `LLM/CURRENT_TASKS.md` | Active/completed task tracker | After every audit |
+| `LLM/RESUME_PROMPT.md` | Orchestrator resume after context reset | Use when starting a fresh chat window |
 
 Create these files if they don't exist yet (except `baseline.md`, which is only created by the Scout prompt).
 

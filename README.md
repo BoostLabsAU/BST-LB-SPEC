@@ -23,7 +23,7 @@ This separation prevents scope creep, keeps implementations focused, and creates
 │                                                      │
 │  1. Asks clarifying questions                        │
 │  2. Creates LLM/context/{feature}.md                 │
-│  3. Creates LLM/HANDOFF_{FEATURE}.md                 │
+│  3. Creates LLM/handoffs/{feature}.md                │
 │  4. Gives you the prompt to paste into Coding LLM    │
 └─────────────────┬───────────────────────────────────┘
                   │ You paste the prompt
@@ -100,16 +100,51 @@ Paste this into your Orchestrator LLM:
 
 ---
 
+## Resuming After Restart / Context Reset (Recommended)
+
+If the Orchestrator chat gets long (many tasks, many audits), two things tend to happen:
+1. You get close to the context limit and burn tokens.
+2. If you start a fresh chat window, the Orchestrator may lose state and either produce partial handoffs or regress into writing code.
+
+This workflow is designed to be repo-state driven, not chat-memory driven. The fix is to keep the current state in files and use a dedicated resume prompt.
+
+### Before Closing A Long Orchestrator Thread
+- Design doc exists for each active task: `LLM/context/{feature}.md`
+- Handoff exists for each active task: `LLM/handoffs/{feature}.md`
+- Completion report exists after coding: `LLM/completions/{feature}.md`
+- `LLM/CURRENT_TASKS.md` is up to date (active/blocked/next) and includes pointers to the current handoff/context files
+- `LLM/orchestrator_notes.md` is up to date (short audit trail)
+- `LLM/docs/COMMANDS.md` and `LLM/docs/API_REFERENCE.md` are updated after successful audits
+
+### Resume In A Fresh Chat Window
+Use the Orchestrator-only prompt in `LLM/RESUME_PROMPT.md`.
+
+---
+
+## Handoff File Hygiene (Avoid `LLM/` Sprawl)
+
+In real projects, `LLM/` will accumulate handoffs, context docs, completion reports, and audits. This is normal, but you should keep it navigable:
+
+- Prefer updating an existing `LLM/handoffs/{feature}.md` in place instead of creating `*_V2.md`, `*_FINAL.md`, etc.
+- If your repo already uses `LLM/HANDOFF_*.md` at the `LLM/` root, keep it; just ensure `LLM/CURRENT_TASKS.md` points at the active handoff path.
+- Keep exactly one "current" handoff per active feature (the file the Coding LLM should read).
+- Keep history in `LLM/completions/` (every execution produces a report) and `LLM/orchestrator_notes.md` (audit trail).
+- Keep old handoffs: they are useful when the user references a previous feature (pair with `LLM/completions/{feature}.md`).
+
+---
+
 ## Folder Structure
 
 ```
 your-project/
 ├── LLM/                              ← AI workflow folder
 │   ├── ORCHESTRATOR_BOOTSTRAP.md      ← Project overview for the Orchestrator
+│   ├── RESUME_PROMPT.md               ← Orchestrator resume after context reset
 │   ├── SCOUT_PROMPT.md                ← (Optional) Baseline scout initialization
 │   ├── orchestrator_notes.md          ← Running log of all changes
 │   ├── CURRENT_TASKS.md               ← Active/completed task tracker
-│   ├── HANDOFF_{FEATURE}.md           ← Coding instructions (handoff prompt)
+│   ├── handoffs/                      ← Coding instructions (handoffs)
+│   │   └── {feature}.md               ← Self-contained procedural handoff spec
 │   ├── context/                       ← Feature design docs
 │   │   └── {feature}.md               ← Requirements, data schemas, command flows
 │   ├── completions/                   ← Coding LLM completion reports
@@ -169,8 +204,9 @@ It writes `evals/skills_log.csv` (gitignored). Open it in Sheets/Excel and filte
 
 ## Changelog
 
-### v3.2 (Unreleased)
+### v3.2 
 
+- **Orchestrator resume prompt + handoff lifecycle.** Added `LLM/RESUME_PROMPT.md` for deterministic rehydration after context reset. `LLM/CURRENT_TASKS.md` now carries pointers (handoff/context/completion). Added `LLM/handoffs/` to keep handoff files organized.
 - **Optional Baseline Scout.** Added `LLM/SCOUT_PROMPT.md` for large/unfamiliar projects. Produces `LLM/scout/baseline.md` (Navigation + Verification anchors, hard-capped at 150–250 lines). Orchestrator-only — never added to Coding LLM handoffs.
 
 ### v3.1 (2026-03-02)
