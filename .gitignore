@@ -2,11 +2,8 @@
 evals-priv/
 testing-internal/
 
-# Generated eval artifacts
-evals/skills_log.csv
-
-# Optional local helpers (downloaded from gist)
-collect_skill_feedback.py
+# Local reference copy of the v1 template (not part of the release)
+OG/
 
 # Editor
 .vscode/

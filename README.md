@@ -1,254 +1,299 @@
-# BST-STRUCTURE — Two-LLM Development Workflow
+# BST-LB-SPEC — Spec-Driven AI Development Workflow
+
+A repo-native, markdown-first workflow for building software with AI agents.
+
+Three execution roles, two optional entrypoints (Deep Planner, and a one-time adoption Scout), six execution stages, one authority chain. Works with Claude Code, Cursor, Codex CLI, Aider, opencode, or any model/harness combination. No build tools, no scripts, no vendor lock-in.
+
+## Start In 30 Seconds
+
+Copy `LLM/` and `ORCHESTRATOR_PROMPT.md` into your project root, then paste one line into a fresh AI session:
+
+- **New project:** `Read LLM/START_ORCHESTRATOR.md and follow it.`
+- **Existing project:** `Read LLM/START_SCOUT.md and follow it.` — the Scout maps your repo once, then hands you the Orchestrator kickstart.
+
+Full protocol: [`QUICK_START.md`](QUICK_START.md).
+
+---
 
 ## What This Is
-A portable project structure for building software using two AI agents:
-1. **Orchestrator LLM** (Planner) — analyzes the project, designs features, writes handoff prompts, audits implementations, maintains documentation
-2. **Coding LLM** (Executor) — reads handoff prompts, implements the code, writes completion reports
 
-This separation prevents scope creep, keeps implementations focused, and creates an audit trail.
-
----
-
-## How It Works
-
-```
-┌─────────────────────────────────────────────────────┐
-│                    YOU (Human)                       │
-│  "I want to add user authentication"                │
-└─────────────────┬───────────────────────────────────┘
-                  │
-                  ▼
-┌─────────────────────────────────────────────────────┐
-│              ORCHESTRATOR LLM (Planner)              │
-│                                                      │
-│  1. Asks clarifying questions                        │
-│  2. Creates LLM/context/{feature}.md                 │
-│  3. Creates LLM/handoffs/{feature}.md                │
-│  4. Gives you the prompt to paste into Coding LLM    │
-└─────────────────┬───────────────────────────────────┘
-                  │ You paste the prompt
-                  ▼
-┌─────────────────────────────────────────────────────┐
-│               CODING LLM (Executor)                  │
-│                                                      │
-│  1. Reads the handoff + reference files              │
-│  2. Implements the code                              │
-│  3. Runs syntax/verification checks                  │
-│  4. Writes LLM/completions/{feature}.md              │
-│  5. Gives you the audit prompt to paste back         │
-└─────────────────┬───────────────────────────────────┘
-                  │ You paste the audit prompt
-                  ▼
-┌─────────────────────────────────────────────────────┐
-│              ORCHESTRATOR LLM (Auditor)              │
-│                                                      │
-│  1. Reads completion report                          │
-│  2. Performs Code Review against handoff spec        │
-│  3. Runs syntax checks                              │
-│  4. Writes follow-up prompt to fix issues (if needed)│
-│  5. Updates documentation (if passed)                │
-│  6. Asks "What next?"                                │
-└─────────────────────────────────────────────────────┘
+```text
+requirements → design → task list → handoff → completion → audit
 ```
 
----
+Each stage produces a small markdown artifact. Each stage subordinates to the one above it.
 
-## Which LLMs Should I Use?
+Work is delivered in **work packages (WPs)** — units of work sized for one focused coding session. WP IDs are zero-padded, assigned by the Orchestrator in creation order, **globally unique across the whole project** (WP-001, WP-002, …), and never renumbered — so `LLM/handoffs/WP-{ID}.md`, `LLM/completions/WP-{ID}.md`, and `LLM/audits/WP-{ID}.md` never collide, even across multiple task lists.
 
-We tested 20+ models across 3 waves of cross-audit benchmarks (~16,000 data points). Recommended pairs:
+The flow runs across three execution roles plus two optional entrypoints:
 
-| Tier | Orchestrator | Coder |
-|-------------|-------------|-------|
-| Best overall | GPT-5.2 | Codex 5.3 |
-| Best value | Sonnet 4.6 | Codex 5.3 |
-| Cheapest (self-host / open weights) | DeepSeek V3.2 | Kimi 2.5 |
+- **Orchestrator (planner / router)** — analyzes, designs, writes handoffs, routes audits, and maintains documentation. **Does not write production code.**
+- **Coder (executor)** — reads one handoff, implements exactly that scope, writes a completion report and return prompt. **Does not redefine requirements or design.**
+- **Auditor (reviewer)** — reviews an audit-ready completion in a separate session and writes the audit verdict. **Does not implement the handoff.**
+- **Deep Planner (optional)** — decomposes large or ambiguous work before the Orchestrator issues handoffs.
+- **Scout (optional, one-time)** — explores an existing repo at adoption time, records authority docs and verification commands, and hands you a ready Orchestrator kickstart.
 
-**Main recommendation: GPT-5.2 (Orchestrator) + Codex 5.3 (Coder).**
-
-*Note: “Cheapest (self-host / open weights)” reflects our benchmark runs; pricing changes over time and varies by provider.*
-
-**GPT-5.2 vs Opus 4.6:** Both are strong Orchestrators. Default to **GPT-5.2** for general use; swap in **Opus 4.6** when the repo is Laravel-heavy or you want extra “audit sharpness” on tricky bugs.
-
-Full rationale and methodology: [LLM Recommendations](evals/LLM_RECOMMENDATIONS.md) *(detailed internal analysis is archived in `testing-internal/`)*.
+For serious work, run Orchestrator/Coder/Auditor as separate sessions. The high-trust default is a separate Auditor session. One session role-playing every role is low-assurance.
 
 ---
 
-## Setup for a New Project
+## Role Start Files
 
-### 0. Pick your Orchestrator and Coder LLMs
-See the table above or read [evals/LLM_RECOMMENDATIONS.md](evals/LLM_RECOMMENDATIONS.md).
+The drop-in `LLM/` folder includes five role-specific starts:
 
-### 1. Copy the `LLM/` folder template into your project root
+| Role | Start file | Use when |
+|---|---|---|
+| Orchestrator | `LLM/START_ORCHESTRATOR.md` | planning, writing handoffs, receiving completions, routing audits, updating live state |
+| Coder | `LLM/START_CODER.md` | implementing exactly one active handoff |
+| Auditor | `LLM/START_AUDITOR.md` | reviewing an audit-ready completion |
+| Deep planner | `LLM/START_DEEP_PLANNER.md` | decomposing large/ambiguous work before handoff |
+| Scout (one-time) | `LLM/START_SCOUT.md` | adopting BST-LB-SPEC on an existing repo you haven't mapped yet |
 
-### 2 (Optional). Run the Baseline Scout
-If you dropped this into a large/unfamiliar project, see `LLM/SCOUT_PROMPT.md` — it produces `LLM/scout/baseline.md`, which you then summarize into `LLM/ORCHESTRATOR_BOOTSTRAP.md`.
-
-### 3. Bootstrap the Orchestrator
-
-Paste this into your Orchestrator LLM:
-
-> You are the **Orchestrator LLM** for this project. Read the file `LLM/ORCHESTRATOR_BOOTSTRAP.md` to understand the project structure, existing features, and your workflow. Then ask me what I'd like to work on.
-
-### 4. For each feature, the cycle is:
-
-1. **You → Orchestrator:** Describe the feature
-2. **Orchestrator → You:** Asks questions, then writes handoff
-3. **You → Coding LLM:** Paste the handoff prompt
-4. **Coding LLM → You:** Implements + gives audit prompt
-5. **You → Orchestrator:** Paste the audit prompt
-6. **Orchestrator -> You:** Performs code review. If issues exist, gives follow-up prompt. If repeated issues emerge, updates `LLM/docs/RULES.md`. If passed, updates docs and asks "What next?"
+`LLM/START_HERE.md` is only a router to these files.
 
 ---
 
-## Resuming After Restart / Context Reset (Recommended)
+## The Authority Chain
 
-If the Orchestrator chat gets long (many tasks, many audits), two things tend to happen:
-1. You get close to the context limit and burn tokens.
-2. If you start a fresh chat window, the Orchestrator may lose state and either produce partial handoffs or regress into writing code.
+When two layers conflict, the higher layer wins.
 
-This workflow is designed to be repo-state driven, not chat-memory driven. The fix is to keep the current state in files and use a dedicated resume prompt.
+| # | Layer | Lives in | Owner |
+|---|---|---|---|
+| 1 | Requirements | `LLM/requirements/` or external authority docs | Orchestrator + human |
+| 2 | Design | `LLM/design/` or external authority docs | Orchestrator + human |
+| 3 | Tasks | `LLM/tasks/` | Orchestrator |
+| 4 | Handoffs | `LLM/handoffs/` | Orchestrator |
+| 5 | Completions | `LLM/completions/` | Coder |
+| 6 | Audits | `LLM/audits/` | Auditor or Orchestrator acting as Auditor |
+| 7 | Rules | `LLM/rules.md` | Orchestrator |
 
-### Before Closing A Long Orchestrator Thread
-- Design doc exists for each active task: `LLM/context/{feature}.md`
-- Handoff exists for each active task: `LLM/handoffs/{feature}.md`
-- Completion report exists after coding: `LLM/completions/{feature}.md`
-- `LLM/CURRENT_TASKS.md` is up to date (active/blocked/next) and includes pointers to the current handoff/context files
-- `LLM/orchestrator_notes.md` is up to date (short audit trail)
-- `LLM/docs/COMMANDS.md` and `LLM/docs/API_REFERENCE.md` are updated after successful audits
+Rules:
 
-### Resume In A Fresh Chat Window
-Use the Orchestrator-only prompt in `LLM/RESUME_PROMPT.md`.
+- `rules.md` cannot override requirements or design.
+- Handoffs cannot override tasks.
+- Completions cannot redefine scope.
+- Audits can fail work, but cannot silently change requirements.
+- **Audit failure blocks merge/close.**
 
 ---
 
-## Handoff File Hygiene (Avoid `LLM/` Sprawl)
+## State Files: `CURRENT.md` vs `SPEC.md`
 
-In real projects, `LLM/` will accumulate handoffs, context docs, completion reports, and audits. This is normal, but you should keep it navigable:
+BST-LB-SPEC intentionally separates live volatile state from slow authority/index state.
 
-- Prefer updating an existing `LLM/handoffs/{feature}.md` in place instead of creating `*_V2.md`, `*_FINAL.md`, etc.
-- If your repo already uses `LLM/HANDOFF_*.md` at the `LLM/` root, keep it; just ensure `LLM/CURRENT_TASKS.md` points at the active handoff path.
-- Keep exactly one "current" handoff per active feature (the file the Coding LLM should read).
-- Keep history in `LLM/completions/` (every execution produces a report) and `LLM/orchestrator_notes.md` (audit trail).
-- Keep old handoffs: they are useful when the user references a previous feature (pair with `LLM/completions/{feature}.md`).
+- `LLM/CURRENT.md` is the live active-work pointer. The Orchestrator updates it after every workflow transition.
+- `LLM/SPEC.md` is a slow-moving authority/index file. Do not use it as a per-WP active tracker.
+
+Allowed `CURRENT.md` statuses:
+
+- `idle; awaiting orchestrator selection`
+- `awaiting-coder`
+- `awaiting-completion`
+- `awaiting-audit`
+- `blocked; awaiting orchestrator decision`
+- `follow-up awaiting coder`
+- `complete`
+
+State ownership:
+
+- Orchestrator owns `CURRENT.md` transitions.
+- Coder writes completion evidence and the Orchestrator Return Prompt.
+- Auditor writes audit verdicts.
+- Per-WP closure truth lives in `LLM/audits/WP-{ID}.md`.
+- After Pass audits, the Orchestrator moves the WP to `CURRENT.md#Recently Completed`, populates `CURRENT.md#Next`, and immediately issues the next handoff/Coder prompt unless the human pauses or no work remains.
+- Missing/corrupt completions reset to coder handoff; blocked/partial/stopped completions go to Orchestrator blocker handling, not audit.
+
+---
+
+## The Coder Return Contract
+
+Every coding session ends the same way, no matter how it went: the Coder writes a completion report to `LLM/completions/`, and both the report and its final chat message end with a short paste-ready block — the **Orchestrator Return Prompt**. You copy that block into the Orchestrator window, and the loop continues.
+
+This is what keeps the workflow closed. Whether the Coder finished cleanly, failed verification, hit a stop condition, or got blocked halfway, control always returns to the Orchestrator with a structured summary: what happened, what was verified, whether the work is ready for audit, and what decision is needed next. A session that ends without the return prompt is treated as incomplete — the Orchestrator requests a corrected report instead of guessing what happened.
+
+---
+
+## Two Modes
+
+Pick one in `LLM/SPEC.md` when you adopt. If you're not sure which fits, the Scout session picks for you.
+
+### New Project Mode
+
+You have little or no existing planning, so BST-LB-SPEC owns the full chain:
+
+```text
+requirements → design → tasks → handoffs → completions → audits
+```
+
+Start at the top with `LLM/REQUIREMENTS_TEMPLATE.md`; each layer flows from the one above it.
+
+### Existing Project Mode
+
+Your repo already has docs that *function as* requirements and design — architecture docs, ADRs, an implementation plan, even a thorough README. **Do not duplicate them.** They stay where they are and remain the authority; handoffs cite them directly.
+
+BST-LB-SPEC adds only the execution layers your project is missing. Most often that is:
+
+```text
+tasks → handoffs → completions → audits
+```
+
+List your authority docs in `LLM/SPEC.md` — or run the one-time Scout session (`LLM/START_SCOUT.md`), which explores the repo, fills `SPEC.md` for you, writes `LLM/design/baseline.md` if you have no usable architecture docs, and hands you the Orchestrator kickstart.
+
+### Hybrid Mode
+
+A mix: some layers come from external docs, others are authored under `LLM/` — e.g. design lives in your `docs/` folder, but a new feature gets a scoped requirements bridge under `LLM/requirements/`. Mark which is which in `LLM/SPEC.md` so handoffs cite the right source.
+
+---
+
+## Create The Next Missing Layer Only
+
+The six stages form a ladder: requirements → design → tasks → handoffs → completions → audits. Most projects already have some of the upper rungs in some form — a README that acts as requirements, architecture docs that act as design, maybe a task tracker.
+
+The rule: **find the highest rung your project is missing, and create only that one.** Never recreate a layer that already exists somewhere else — cite it instead.
+
+- Project has nothing? Start at the top: author requirements.
+- Has requirements and design (in any form)? Create the task list.
+- Has a task list too? Go straight to handoffs, completions, and audits — this is where most existing projects land.
+- One feature too vague to hand off safely? Write a small, feature-scoped requirements or design "bridge" for just that feature, then task it. Bridges stay subordinate to your real docs.
+
+This one rule is what keeps BST-LB-SPEC a thin execution layer instead of a second planning system competing with your actual documentation.
 
 ---
 
 ## Folder Structure
 
+```text
+this-template/                          # copy LLM/ and ORCHESTRATOR_PROMPT.md into your project root
+├── QUICK_START.md                      # quick start and copy-paste protocol (read from the template)
+├── MODEL_ROUTING_GUIDE.md              # adoption-time guide for filling LLM/model-routing.md
+├── ORCHESTRATOR_PROMPT.md              # kickstart prompt for Window 1 (copy into your project)
+├── examples/                           # one complete WP lifecycle: task list → handoff → completion → audit
+├── LLM/
+│   ├── START_HERE.md                   # router to role start prompts
+│   ├── START_ORCHESTRATOR.md           # orchestrator entrypoint
+│   ├── START_CODER.md                  # coder entrypoint
+│   ├── START_AUDITOR.md                # auditor entrypoint
+│   ├── START_DEEP_PLANNER.md           # deep-planning/decomposition entrypoint
+│   ├── START_SCOUT.md                  # one-time adoption/intake entrypoint
+│   ├── RESUME_PROMPT.md                # context-reset / resume protocol
+│   ├── SPEC.md                         # spec index + authority order + current mode
+│   ├── CURRENT.md                      # tiny active-work pointer
+│   ├── ORCHESTRATOR_BOOTSTRAP.md       # authoritative orchestrator behavior
+│   ├── context-loading.md              # role-based context loading policy
+│   ├── model-routing.md                # optional model/lane routing guidance
+│   ├── REQUIREMENTS_TEMPLATE.md
+│   ├── DESIGN_TEMPLATE.md
+│   ├── TASKLIST_TEMPLATE.md
+│   ├── HANDOFF_TEMPLATE.md
+│   ├── COMPLETION_TEMPLATE.md
+│   ├── AUDIT_TEMPLATE.md
+│   ├── rules.md                        # failure memory only
+│   ├── requirements/                   # if BST-LB-SPEC owns requirements or scoped bridges
+│   ├── design/                         # if BST-LB-SPEC owns design or scoped bridges
+│   ├── tasks/
+│   ├── handoffs/
+│   ├── completions/
+│   ├── audits/
+│   ├── model-notes/                    # field-trial notes for testing lanes
+│   └── skills/                         # reusable patterns; created at 3+ repeats
+└── ... project files
 ```
-your-project/
-├── LLM/                              ← AI workflow folder
-│   ├── ORCHESTRATOR_BOOTSTRAP.md      ← Project overview for the Orchestrator
-│   ├── RESUME_PROMPT.md               ← Orchestrator resume after context reset
-│   ├── SCOUT_PROMPT.md                ← (Optional) Baseline scout initialization
-│   ├── orchestrator_notes.md          ← Running log of all changes
-│   ├── CURRENT_TASKS.md               ← Active/completed task tracker
-│   ├── handoffs/                      ← Coding instructions (handoffs)
-│   │   └── {feature}.md               ← Self-contained procedural handoff spec
-│   ├── context/                       ← Feature design docs
-│   │   └── {feature}.md               ← Requirements, data schemas, command flows
-│   ├── completions/                   ← Coding LLM completion reports
-│   │   └── {feature}.md               ← Pass/fail, commands run, files explored
-│   ├── docs/                          ← Living documentation
-│   │   ├── COMMANDS.md                ← All user-facing commands/APIs
-│   │   ├── API_REFERENCE.md           ← Internal function signatures & schemas
-│   │   └── RULES.md                   ← Persistent invariants & bounds
-│   ├── scout/                         ← Scout output (optional, Orchestrator-only)
-│   │   └── baseline.md                ← Navigation + verification anchors
-│   └── skills/                         ← Reusable procedural patterns (created over time)
-│       └── {pattern}.md                ← e.g., add-api-endpoint.md, write-unit-tests.md
-├── ... (your project files)
-```
+
+You do not need every folder immediately. Create artifacts as you reach the layer that needs them.
 
 ---
 
-## Key Principles
+## How An Audit Works
 
-1. **Large, generic global context is often harmful** — The Coding LLM receives a highly-focused procedural handoff, not a giant repo summary.
-2. **Failure Memory, not Architecture Memory** — Global context is restricted to a tiny `RULES.md` file that only tracks persistent failures and non-negotiable conventions.
-3. **Controlled Agent Exploration** — The Coding LLM is told exactly where to start reading. If it gets blocked, it is allowed to perform targeted searches, but must stop and ask for clarification if the scope expands too far.
-4. **Procedural Guidance Over Declarative Goals** — Handoffs provide step-by-step approaches and exact acceptance checks instead of just saying "build this feature."
-5. **Measurable Completion Reports** — Every coding task ends with an evidence-driven report containing pass/fail metrics, exact commands run, extra files explored, and performance tracking if available.
-6. **Every handoff is audited** — The Orchestrator verifies against the spec before closing out, measuring task success metrics to prove value.
-7. **Reusable Skills over repeated instructions** — When the Orchestrator writes the same procedural steps three times, it extracts them into a `LLM/skills/` file. Handoffs reference a small number of relevant skills (0–3) instead of repeating boilerplate.
+The audit is a separate artifact in `LLM/audits/`, not a step buried inside the orchestrator's response.
 
----
+1. Coder finishes/stops a handoff and writes the completion report.
+2. Completion includes `## Orchestrator Return Prompt`.
+3. Orchestrator reads the completion.
+4. If `Status: Pass` and `Ready For Audit? Yes`, Orchestrator sets `CURRENT.md` to `awaiting-audit` and routes to a fresh Auditor by default.
+5. Auditor reads the diff, completion, handoff, task entry, and cited authority docs.
+6. Auditor runs verification commands when possible.
+7. Auditor writes verdict — Pass / Fail / Follow-up required — to `LLM/audits/WP-{ID}.md`.
+8. **Pass:** branch can merge/close; the Orchestrator moves the WP to `CURRENT.md#Recently Completed`, populates `CURRENT.md#Next`, and immediately issues the next handoff/Coder prompt unless the human pauses or no work remains.
+9. **Fail / Follow-up:** branch stays open; Orchestrator writes a follow-up handoff and updates `CURRENT.md` to follow-up/blocker state. No merge/close.
 
-## Optional: Skill Feedback CSV
-
-Skills are created/updated by the Orchestrator, but it’s still useful to periodically **prune/repair** skills based on real usage feedback (since Skills can sometimes hurt).
-
-The lightweight option (no scripts):
-
-```powershell
-rg -n "^- \\*\\*Skills Used" LLM/completions
-```
-
-If you want a spreadsheet-friendly CSV, use an external helper script (kept as a Gist so this repo stays “drop-in” and tool-agnostic):
-
-```powershell
-$raw = "https://gist.githubusercontent.com/BoostLabsAU/813cec00dbc21da9e61ec44adb02f0ae/raw/0bd5cb6c786316db2e0aa0a8cbeea0f30953d3be/collect_skill_feedback.py"
-Invoke-WebRequest -Uri $raw -OutFile ".\\collect_skill_feedback.py"
-python .\\collect_skill_feedback.py --completions-dir LLM\\completions --out evals\\skills_log.csv
-```
-
-It writes `evals/skills_log.csv` (gitignored). Open it in Sheets/Excel and filter by skill to find “confusing” / “harmful” patterns, then update or prune `LLM/skills/*.md`.
+If the completion is not audit-ready, do not audit it as complete. Resolve the blocker or write a follow-up handoff.
 
 ---
 
-## See Also
+## Why `rules.md` Is Failure Memory Only
 
-- **[DevChain](https://github.com/twitech-lab/devchain)** — A more advanced multi-agent development framework with structured task pipelines. If you need something beyond a lightweight template, worth checking out.
+Architecture, conventions, file locations, and project facts belong in `design/` or your existing authority docs. They do not belong in `rules.md`.
+
+`rules.md` exists for one reason: when an AI agent makes the same mistake twice, write a rule to prevent the third time. Keep it tiny. Prune stale rules.
+
+The template ships it nearly empty: three workflow invariants (marked exempt from pruning) and nothing else. Your project's failure rules accumulate below them.
+
+---
+
+## Quick Start
+
+See `QUICK_START.md` for new-project and existing-project quick starts.
+
+---
+
+## Three Roles, Three Sessions
+
+For high-trust work, run Orchestrator, Coder, and Auditor as **separate sessions**:
+
+| Window | Role | Session policy |
+|---|---|---|
+| 1 | Orchestrator | Persistent. Keep open across WPs. |
+| 2 | Coder | Fresh session every handoff. Close after return prompt. |
+| 3 | Auditor | Fresh session every audit. Close after verdict. |
+
+The human copy-pastes prompts between windows:
+
+1. Orchestrator writes handoff → gives Coder prompt → human pastes into fresh Coder window
+2. Coder implements → returns `## Orchestrator Return Prompt` → human pastes into Orchestrator window
+3. Orchestrator processes completion → gives Auditor prompt → human pastes into fresh Auditor window
+4. Auditor writes verdict → human pastes verdict summary into Orchestrator window
+5. Orchestrator updates state → writes next handoff → repeat
+
+The Coder never audits its own work. The Auditor never shares context with the Coder. The Orchestrator never reads the Coder's chat transcript — only the completion report on disk and the structured return prompt the human pastes in.
+
+See `QUICK_START.md` for the full protocol diagram.
+
+---
+
+## Which LLMs
+
+Any. The workflow is model-agnostic: the handoff/audit discipline is what carries quality, not a specific model. Pick an Orchestrator, a Coder, and an Auditor from whatever your subscriptions include.
+
+`LLM/model-routing.md` is the optional cost/risk routing layer. It ships model-agnostic: it maps whatever models you have onto lane shapes (diagnosis, bulk implementation, premium gate, judgment) and defines how to trial a new model before trusting it with default routing. Fill in its lane table during adoption — `MODEL_ROUTING_GUIDE.md` explains the method and includes a dated worked example.
+
+Two rules survive any model lineup:
+
+1. The Coder and Auditor of the same WP must be different models — at minimum different sessions.
+2. Scarce premium capacity goes to design decisions and final gates on high-blast-radius changes, not bulk implementation.
+
+---
+
+## Skills (Reusable Patterns)
+
+`LLM/skills/` exists for patterns that repeat across handoffs. **Do not pre-create skills.** The Orchestrator extracts a skill the third time it writes the same procedural steps. Two occurrences is a coincidence.
+
+A handoff references at most 0–3 skills. If you'd reference 4+, consolidate or inline only what's needed.
+
+---
+
+## What This Is Not
+
+- Not OpenSpec, Spec Kit, GSD, BMAD, Notion, Linear, or a process-heavy PM framework.
+- Not a CLI, package, or build tool. Markdown only.
+- Not a replacement for your existing architecture docs. Use them — point handoffs at them.
+- Not opinionated about which AI harness you use. Pick whichever respects file scope and verification.
 
 ---
 
 ## Changelog
 
-### v3.2 
+- **v2.0 (current)** — Renamed to **BST-LB-SPEC**. Spec-driven rework: separated Orchestrator / Coder / Auditor roles plus Deep Planner and one-time Scout entrypoints; the authority chain (requirements → design → tasks → handoffs → completions → audits); audits as separate artifacts with fail = no merge; `CURRENT.md`/`SPEC.md` state split; mandatory Orchestrator Return Prompt on every Coder outcome; model-agnostic routing layer with field-trial notes; globally unique WP IDs; worked example in `examples/`.
+- **v1** — the original two-LLM (Orchestrator + Coder) template, published as `LLM-Orchestrator-coder-setup`.
 
-- **Orchestrator resume prompt + handoff lifecycle.** Added `LLM/RESUME_PROMPT.md` for deterministic rehydration after context reset. `LLM/CURRENT_TASKS.md` now carries pointers (handoff/context/completion). Added `LLM/handoffs/` to keep handoff files organized.
-- **Optional Baseline Scout.** Added `LLM/SCOUT_PROMPT.md` for large/unfamiliar projects. Produces `LLM/scout/baseline.md` (Navigation + Verification anchors, hard-capped at 150–250 lines). Orchestrator-only — never added to Coding LLM handoffs.
-
-### v3.1 (2026-03-02)
-
-- **Skills are selective (0–3 per handoff).** Avoid 4+ skill sprawl; never ask the Coding LLM to author skills mid-task.
-- **Completion reports capture skill impact.** Added “Skills Used (if any)” with “helpful/confusing” feedback.
-- **Verification defaults to focused.** Prefer 1–3 commands unless the handoff requires broader testing.
-- **Optional skill-feedback CSV workflow.** `evals/skills_log.csv` can be generated locally (gitignored) using a Gist-based helper script, or by grepping completion reports.
-
-### v3 (2026-03-02)
-
-- **Added LLM pair recommendations.** Ran a 3-wave cross-audit benchmark (Node.js, Laravel, Rails) with 20+ models. Summary published in `evals/LLM_RECOMMENDATIONS.md` (detailed internal analysis archived in `testing-internal/`).
-- **Main recommendation:** GPT-5.2 (Orchestrator) + Codex 5.3 (Coder).
-- **Added "Which LLMs Should I Use?" section to README** with a quick-reference table.
-- **Cleaned project structure** — internal testing data moved to `testing-internal/` and excluded from git.
-
-### v2.1 (2026-02-23)
-
-Design informed by:
-- *Harness Engineering: Leveraging Codex in an Agent-First World* (OpenAI, Feb 2026) — repository-embedded skills, depth-first decomposition, focused sub-documents over monolithic instruction files.
-
-Changes:
-- **Added `LLM/skills/` directory** — reusable procedural instruction fragments. Created by the Orchestrator when handoff patterns repeat 3+ times. Keeps handoffs DRY without bloating global context.
-- **Updated Orchestrator workflow** — new step to reference/create skills during handoff writing.
-- **Updated Handoff template** — skills can be listed under "Read These Files First" when applicable.
-- **Updated Orchestrator Prompt & Quick Start** — added skills to documentation table and pro tips.
-- **Fixed terminology** — removed ambiguous "Skill prompt" phrasing that conflicted with the new skills concept.
-- **Adopted minor versioning** — additive changes use v2.x; major redesigns use v3.
-
-### v2 (2026-02-23)
-
-Design informed by two research papers:
-- *Evaluating AGENTS.md* (arXiv:2602.11988) — large generic context files reduce task success and increase cost; minimal human-written context helps.
-- *SkillsBench* (arXiv:2602.12670) — curated procedural Skills improve pass rates (avg +16.2pp across domains; +4.5pp on SWE; 16/84 tasks show negative deltas). Focused 2–3 Skills outperform 4+ Skills and “comprehensive” documentation.
-
-Changes:
-- **Deduplicated sources of truth.** `ORCHESTRATOR_PROMPT.md` now defers to `LLM/ORCHESTRATOR_BOOTSTRAP.md` for workflow and `LLM/HANDOFF_TEMPLATE.md` for handoff format. No more duplicated blocks to drift.
-- **Added `LLM/docs/RULES.md`** — tiny failure-memory file. Rules added only when the Coding LLM repeats errors; pruned periodically.
-- **Improved handoff template.** Replaced rigid "Do NOT read other files" with controlled exploration + required logging. Added "Deviations from Handoff" to completion reports.
-- **Emphasized procedural guidance** in handoffs — step-by-step instructions over declarative goals.
-- **Cleaned README** — removed promotional framing, kept factual principles.
-
-### v1 (Initial)
-
-- Original two-LLM workflow template with role separation, handoff/completion/audit cycle, and living documentation.
+Upgrading from v1: the old `LLM/context/`, `LLM/CURRENT_TASKS.md`, `LLM/orchestrator_notes.md`, `LLM/docs/`, and `LLM/scout/` layers are deprecated — do not recreate them. Their jobs moved into `LLM/SPEC.md`, `LLM/CURRENT.md`, `LLM/rules.md`, and the one-time Scout session.

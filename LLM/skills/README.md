@@ -26,11 +26,11 @@ Do NOT pre-create skills speculatively. Let them emerge from actual repeated wor
 2. Instead of repeating common procedural steps, the handoff references a skill:
    ```
    ### 1. `routes/api.php` — Add new endpoint
-   Follow the pattern in `LLM/skills/add-api-endpoint.md` with these specifics:
+   Follow the pattern in `LLM/skills/{skill-name}.md` with these specifics:
    - Route: POST /api/users/invite
    - Controller method: UserController@invite
    ```
-3. The Coding LLM reads the skill file as part of "Read These Files First"
+3. The Coding LLM reads the skill file as part of "Read first"
 4. Prefer a small skill set per handoff (**0–3**). If you’d reference 4+ skills, inline only what’s needed or consolidate the Skills.
 
 ## Rules
